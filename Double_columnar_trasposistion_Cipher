@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <string.h>
+
+void encrypt(char text[], int key[], int n, char result[]) {
+    int len = strlen(text);
+    int rows = (len + n - 1) / n;
+    char matrix[rows][n];
+    int i, j, k = 0;
+
+    for (i = 0; i < rows; i++)
+        for (j = 0; j < n; j++)
+            matrix[i][j] = 'X';
+
+    for (i = 0; i < len; i++)
+        matrix[i / n][i % n] = text[i];
+
+    for (int order = 1; order <= n; order++) {
+        for (j = 0; j < n; j++) {
+            if (key[j] == order) {
+                for (i = 0; i < rows; i++)
+                    result[k++] = matrix[i][j];
+            }
+        }
+    }
+
+    result[k] = '\0';
+}
+
+void decrypt(char text[], int key[], int n, char result[]) {
+    int len = strlen(text);
+    int rows = (len + n - 1) / n;
+    char matrix[rows][n];
+    int i, j, k = 0;
+
+    for (i = 0; i < rows; i++)
+        for (j = 0; j < n; j++)
+            matrix[i][j] = 'X';
+
+    for (int order = 1; order <= n; order++) {
+        for (j = 0; j < n; j++) {
+            if (key[j] == order) {
+                for (i = 0; i < rows; i++)
+                    matrix[i][j] = text[k++];
+            }
+        }
+    }
+
+    k = 0;
+
+    for (i = 0; i < rows; i++)
+        for (j = 0; j < n; j++)
+            result[k++] = matrix[i][j];
+
+    result[k] = '\0';
+}
+
+int main() {
+    char text[100], result[100];
+    int key[20], n, choice;
+
+    printf("1. Encryption\n");
+    printf("2. Decryption\n");
+    printf("Enter choice: ");
+    scanf("%d", &choice);
+
+    printf("Enter number of columns: ");
+    scanf("%d", &n);
+
+    printf("Enter key: ");
+    for (int i = 0; i < n; i++)
+        scanf("%d", &key[i]);
+
+    getchar();
+
+    printf("Enter text: ");
+    fgets(text, sizeof(text), stdin);
+    text[strcspn(text, "\n")] = '\0';
+
+    if (choice == 1) {
+        encrypt(text, key, n, result);
+        printf("Encrypted text: %s", result);
+    } else if (choice == 2) {
+        decrypt(text, key, n, result);
+        printf("Decrypted text: %s", result);
+    } else {
+        printf("Invalid choice");
+    }
+
+    return 0;
+}
